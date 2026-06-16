@@ -12,7 +12,7 @@ export async function login(req: Request, res: Response) {
       return res.status(400).json({ error: 'Username and password are required.' });
     }
 
-    const users = await query<any[]>('SELECT * FROM admin_users WHERE username = ?', [username]);
+    const users = await query<any[]>('SELECT * FROM waitlist_admin_users WHERE username = ?', [username]);
 
     if (users.length === 0) {
       return res.status(401).json({ error: 'Invalid credentials.' });
@@ -27,8 +27,8 @@ export async function login(req: Request, res: Response) {
 
     const token = jwt.sign(
       { id: user.id, username: user.username },
-      process.env.JWT_SECRET || '',
-      { expiresIn: process.env.JWT_EXPIRES_IN || '24h' }
+      process.env.JWT_SECRET as string,
+      { expiresIn: process.env.JWT_EXPIRES_IN || '24h' } as any
     );
 
     return res.json({ token });

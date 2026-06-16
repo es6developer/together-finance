@@ -4,10 +4,10 @@
   "description": "Together Finance Waitlist API",
   "main": "dist/server.js",
   "scripts": {
-    "dev": "tsx watch src/server.ts",
-    "build": "tsc",
-    "start": "node dist/server.js",
-    "migrate": "tsx src/config/migrate.ts",
+"dev": "tsc --watch & sleep 1 && node --watch dist/server.js",
+"build": "tsc",
+"start": "node dist/server.js",
+"migrate": "node dist/config/migrate.js",
     "lint": "eslint src --ext .ts"
   },
   "dependencies": {

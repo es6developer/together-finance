@@ -29,13 +29,13 @@ export interface WaitlistStats {
 
 export async function createEntry(data: WaitlistEntry): Promise<void> {
   await query(
-    `INSERT INTO waitlist (name, email, relationship_type, biggest_challenge, beta_tester_interest) VALUES (?, ?, ?, ?, ?)`,
+    `INSERT INTO waitlist_entries (name, email, relationship_type, biggest_challenge, beta_tester_interest) VALUES (?, ?, ?, ?, ?)`,
     [data.name.trim(), data.email.trim(), data.relationship_type, data.biggest_challenge, data.beta_tester_interest]
   );
 }
 
 export async function findByEmail(email: string): Promise<WaitlistEntry | null> {
-  const entries = await query<WaitlistEntry[]>('SELECT * FROM waitlist WHERE email = ?', [email.trim()]);
+  const entries = await query<WaitlistEntry[]>('SELECT * FROM waitlist_entries WHERE email = ?', [email.trim()]);
   return entries.length > 0 ? entries[0] : null;
 }
 
@@ -65,12 +65,12 @@ export async function findAll(
 
   const whereClause = conditions.length > 0 ? `WHERE ${conditions.join(' AND ')}` : '';
 
-  const countResult = await query<any[]>(`SELECT COUNT(*) as total FROM waitlist ${whereClause}`, params);
+  const countResult = await query<any[]>(`SELECT COUNT(*) as total FROM waitlist_entries ${whereClause}`, params);
   const total = countResult[0].total;
 
   const offset = (page - 1) * limit;
   const entries = await query<WaitlistEntry[]>(
-    `SELECT * FROM waitlist ${whereClause} ORDER BY created_at DESC LIMIT ? OFFSET ?`,
+    `SELECT * FROM waitlist_entries ${whereClause} ORDER BY created_at DESC LIMIT ? OFFSET ?`,
     [...params, limit, offset]
   );
 
@@ -78,21 +78,21 @@ export async function findAll(
 }
 
 export async function getStats(): Promise<WaitlistStats> {
-  const totalResult = await query<any[]>('SELECT COUNT(*) as total FROM waitlist');
+  const totalResult = await query<any[]>('SELECT COUNT(*) as total FROM waitlist_entries');
   const total = totalResult[0].total;
 
-  const visitsResult = await query<any[]>('SELECT COUNT(*) as total FROM page_visits');
+  const visitsResult = await query<any[]>('SELECT COUNT(*) as total FROM waitlist_page_visits');
   const pageVisits = visitsResult[0].total;
 
   const conversionRate = pageVisits > 0 ? (total / pageVisits) * 100 : 0;
 
   const challengeResult = await query<any[]>(
-    'SELECT biggest_challenge as challenge, COUNT(*) as count FROM waitlist GROUP BY biggest_challenge ORDER BY count DESC LIMIT 1'
+    'SELECT biggest_challenge as challenge, COUNT(*) as count FROM waitlist_entries GROUP BY biggest_challenge ORDER BY count DESC LIMIT 1'
   );
   const mostSelectedChallenge = challengeResult.length > 0 ? challengeResult[0] : null;
 
   const betaYesResult = await query<any[]>(
-    "SELECT COUNT(*) as count FROM waitlist WHERE beta_tester_interest = 'yes'"
+    "SELECT COUNT(*) as count FROM waitlist_entries WHERE beta_tester_interest = 'yes'"
   );
   const betaYes = betaYesResult[0].count;
   const betaInterestPercentage = total > 0 ? (betaYes / total) * 100 : 0;

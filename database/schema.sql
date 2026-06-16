@@ -1,10 +1,4 @@
-CREATE DATABASE IF NOT EXISTS together_finance
-  CHARACTER SET utf8mb4
-  COLLATE utf8mb4_unicode_ci;
-
-USE together_finance;
-
-CREATE TABLE IF NOT EXISTS waitlist (
+CREATE TABLE IF NOT EXISTS waitlist_entries (
   id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
   name VARCHAR(255) NOT NULL,
   email VARCHAR(255) NOT NULL UNIQUE,
@@ -26,7 +20,7 @@ CREATE TABLE IF NOT EXISTS waitlist (
   INDEX idx_created (created_at)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
-CREATE TABLE IF NOT EXISTS page_visits (
+CREATE TABLE IF NOT EXISTS waitlist_page_visits (
   id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
   session_id VARCHAR(128) NOT NULL,
   page VARCHAR(255) NOT NULL DEFAULT '/',
@@ -35,13 +29,9 @@ CREATE TABLE IF NOT EXISTS page_visits (
   INDEX idx_visited (visited_at)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
-CREATE TABLE IF NOT EXISTS admin_users (
+CREATE TABLE IF NOT EXISTS waitlist_admin_users (
   id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
   username VARCHAR(100) NOT NULL UNIQUE,
   password_hash VARCHAR(255) NOT NULL,
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
-INSERT INTO admin_users (username, password_hash)
-VALUES ('admin', '$2b$12$LJ3m4ys3Lk0TSwHnbfOMiOXPm1Qlq5Gz8VzB1dG5e5a5b5c5d5e5f5g')
-ON DUPLICATE KEY UPDATE username = username;

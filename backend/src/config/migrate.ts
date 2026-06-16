@@ -3,7 +3,7 @@ import path from 'path';
 import pool from './database';
 
 async function migrate() {
-  const schemaPath = path.join(__dirname, '..', 'database', 'schema.sql');
+  const schemaPath = path.join(__dirname, '..', '..', '..', 'database', 'schema.sql');
 
   if (!fs.existsSync(schemaPath)) {
     console.error(`Schema file not found at ${schemaPath}`);
@@ -11,15 +11,12 @@ async function migrate() {
   }
 
   const schema = fs.readFileSync(schemaPath, 'utf-8');
-  const statements = schema
-    .split(';')
-    .map(s => s.trim())
-    .filter(s => s.length > 0);
 
   try {
-    for (const statement of statements) {
-      await pool.execute(statement);
-      console.log(`Executed: ${statement.substring(0, 80)}...`);
+    const rows = schema.split(';').map(s => s.trim()).filter(s => s.length > 0);
+    for (const row of rows) {
+      await pool.query(row);
+      console.log(`Executed: ${row.substring(0, 80)}...`);
     }
     console.log('Migration completed successfully.');
   } catch (error) {
